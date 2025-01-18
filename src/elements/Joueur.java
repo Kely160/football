@@ -37,4 +37,16 @@ public class Joueur extends Entite {
         Rect rectangleEnglobant = Imgproc.boundingRect(contour);
         Imgproc.rectangle(image, rectangleEnglobant, couleurContour, 2);
     }
+
+    public void annoter(Mat image) {
+        if (image == null || image.empty()) {
+            throw new IllegalArgumentException("L'image ne peut pas être nulle ou vide.");
+        }
+    
+        Point positionTexte = new Point(this.getDimension().x, this.getDimension().y - 5); 
+        String texte = this.getStatut();
+    
+        Imgproc.putText(image, texte, positionTexte, Imgproc.FONT_HERSHEY_SIMPLEX, 1, new Scalar(0, 0, 0), 2);
+    }
+    
 }

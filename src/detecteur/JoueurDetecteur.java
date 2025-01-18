@@ -11,9 +11,37 @@ import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 
+import elements.But;
 import elements.Joueur;
 
 public class JoueurDetecteur {
+    public static Joueur detecterGardien(Mat image, Scalar limiteInferieure, Scalar limiteSuperieure, But[] buts) {
+        Joueur[] joueurs = detecterJoueurMemeEquipe(image, limiteInferieure, limiteSuperieure);
+
+        for (Joueur joueur : joueurs) {
+            // Rect rectJoueur = joueur.getDimension();
+            
+            for (But but : buts) {
+                Rect rectBut = but.getDimension(); 
+                
+                if (rectBut.contains(joueur.getPosition())) {
+                    joueur.setStatut("G");
+                    joueur.annoter(image);
+                    return joueur; 
+                }
+    
+                // Vérification supplémentaire pour s'assurer que tout ou une grande partie du joueur est dans le but
+                // if (rectBut.intersects(rectJoueur)) {
+                //     joueur.setStatut("G");
+                //     return joueur; 
+                // }
+            }
+        }
+    
+        System.err.println("Aucun gardien détecter");
+        return null;
+    }
+
     public static Joueur[] detecterJoueurMemeEquipe(Mat image, Scalar limiteInferieure, Scalar limiteSuperieure) {
         if (image == null || image.empty()) {
             System.err.println("Erreur : Impossible de charger l'image.");
@@ -52,13 +80,10 @@ public class JoueurDetecteur {
                         rectangleEnglobant.y + rectangleEnglobant.height / 2.0
                 );
 
-                // Définir une couleur pour dessiner le rectangle
-                Scalar couleurRectangle = ajusterCouleur(limiteInferieure, -20);
-
                 try {
                     // Créer un objet Joueur avec la position et les dimensions détectées
                     Joueur joueur = new Joueur(positionCentrale, rectangleEnglobant);
-                    joueur.encadrer(image, couleurRectangle, 2); // Rectangle épaisseur 2px
+                    joueur.encadrer(image, new Scalar(0), 1); // Rectangle épaisseur 2px
                     listeJoueurs.add(joueur);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -67,13 +92,5 @@ public class JoueurDetecteur {
         }
 
         return listeJoueurs.toArray(new Joueur[0]);
-    }
-
-    private static Scalar ajusterCouleur(Scalar couleur, int delta) {
-        double[] valeurs = couleur.val;
-        for (int i = 0; i < valeurs.length; i++) {
-            valeurs[i] = Math.min(Math.max(valeurs[i] + delta, 0), 255);
-        }
-        return new Scalar(valeurs);
     }
 }

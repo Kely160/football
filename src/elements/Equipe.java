@@ -55,4 +55,8 @@ public class Equipe {
             throw new Exception("Aucun joueur");
         this.joueurs = joueurs;
     }
+
+    public Joueur getGardien(Mat image, But[] buts) {
+        return JoueurDetecteur.detecterGardien(image, this.getLimiteInferieureCouleur(), this.getLimiteSuperieureCouleur(), buts);
+    }
 }
