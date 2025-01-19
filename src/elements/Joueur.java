@@ -48,5 +48,19 @@ public class Joueur extends Entite {
     
         Imgproc.putText(image, texte, positionTexte, Imgproc.FONT_HERSHEY_SIMPLEX, 1, new Scalar(0, 0, 0), 2);
     }
+
+    public boolean estHJ(Joueur dernierDefenseur, boolean estAttaqueBasHaut) {
+        if (dernierDefenseur == null || this.getPosition() == null || dernierDefenseur.getPosition() == null) {
+            return false; // Pas de joueur ou position inexistante
+        }
     
+        double positionJoueurY = this.getPosition().y - this.getDimension().height;
+        double positionDernierDefenseurY = dernierDefenseur.getPosition().y - dernierDefenseur.getDimension().height;
+    
+        if (estAttaqueBasHaut) {
+            return positionJoueurY > positionDernierDefenseurY;
+        } else {
+            return positionJoueurY < positionDernierDefenseurY;
+        }
+    }    
 }
